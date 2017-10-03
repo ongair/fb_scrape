@@ -1,5 +1,5 @@
 require "fb_scrape/version"
 
-module FbScrape
+module FBScrape
   # Your code goes here...
 end

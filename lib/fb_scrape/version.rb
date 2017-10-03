@@ -1,3 +1,3 @@
-module FbScrape
-  VERSION = "0.1.0"
+module FBScrape
+  VERSION = "0.0.1"
 end
