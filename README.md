@@ -31,7 +31,7 @@ Or install it yourself as:
     puts client.name
   ```
 
-### Loading all the posts for an Facebook account  
+<!-- ### Loading all the posts for an Facebook account  
 
   ```ruby
     require 'ig_scrape'
@@ -68,7 +68,7 @@ Or install it yourself as:
 
     # load all the comments for a post
     fb_scrape comments --id theid --access_token access_token
-  ```
+  ``` -->
 
 ## Development
 
