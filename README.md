@@ -1,4 +1,4 @@
-# IG_Scrape
+# FB_Scrape
 
 This gem provides a utility for scraping facebook posts and comments. You will require a facebook app id
 to use this gem
