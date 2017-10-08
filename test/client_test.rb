@@ -7,7 +7,7 @@ describe "Clients" do
     page_name = "ongairdemo"
     oauth_token = "token"
 
-    stub = stub_request(:get, "https://graph.facebook.com/#{page_name}")
+    stub = stub_request(:get, "https://graph.facebook.com/#{page_name}?access_token=#{oauth_token}")
       .to_return(status: 200, body: {
         name: "Tala Kenya",
         id: '12345'

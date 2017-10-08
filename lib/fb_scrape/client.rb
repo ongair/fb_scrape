@@ -14,7 +14,7 @@ class FBScrape::Client
   end
 
   def get_page_id
-    url = "https://graph.facebook.com/#{@page_name}"
+    url = "https://graph.facebook.com/#{@page_name}?access_token=#{@token_secret}"
     resp = HTTParty.get(url)
 
     case resp.code
