@@ -54,6 +54,20 @@ Or install it yourself as:
     puts post.has_more_comments?
   ```
 
+
+### Loading a comment and its replies
+
+  ```ruby
+    require 'fb_scrape'
+
+    comment = FBScrape::Comment.new(payload, access_token, page_id)
+    comment.load_replies
+
+    puts comment.comments.count
+    puts comment.has_more_replies?
+    comment.load_all_replies
+    puts comment.comments.count
+  ```
 <!---
 ### Using the CLI
 
