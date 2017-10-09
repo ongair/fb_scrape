@@ -35,26 +35,26 @@ Or install it yourself as:
 ### Loading all the posts for an Facebook account  
 
   ```ruby
-    require 'ig_scrape'
+    require 'fb_scrape'
     client = FBScrape::Client.new("page_name", "access_token", "page_id")
     client.load
 
     puts client.posts.length
   ```
 
-<!-- ### Loading a post
+### Loading a post
 
   ```ruby
     require 'fb_scrape'
 
-    post = IGScrape::Post.load_from_id(id)
-    puts post.comment_count
+    post = FBScrape::Post.load_from_id(id, access_token)    
     puts post.has_more_comments?
 
-    post.load_more_comments
+    post.load_all_comments
     puts post.has_more_comments?
   ```
 
+<!---
 ### Using the CLI
 
   You can use the CLI to get a dump in JSON of posts and comments
