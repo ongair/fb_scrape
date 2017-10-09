@@ -27,21 +27,22 @@ Or install it yourself as:
     require 'fb_scrape'
 
     client = FBScrape::Client.new("page_name", "access_token")
+    client.init
     puts client.id
     puts client.name
   ```
 
-<!-- ### Loading all the posts for an Facebook account  
+### Loading all the posts for an Facebook account  
 
   ```ruby
     require 'ig_scrape'
-    client = FBScrape::Client.new("username")
+    client = FBScrape::Client.new("page_name", "access_token", "page_id")
     client.load
 
-    puts client.posts.length == client.post_count
+    puts client.posts.length
   ```
 
-### Loading a post
+<!-- ### Loading a post
 
   ```ruby
     require 'fb_scrape'
