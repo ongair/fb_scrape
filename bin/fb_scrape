@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'fb_scrape'
+require 'thor'
+require 'json'
+
+class FBScrape::CLI < Thor
+
+  desc "id", "Get the page_id for page"
+  option :page_name, :required => true
+  option :token, :required => true
+  def id
+    begin
+      client = FBScrape::Client.new(options[:page_name], options[:token])
+      client.init
+      puts client.id
+    rescue ArgumentError => e
+      puts e.message
+    end
+  end
+
+  desc "posts", "Get all the posts for the page"
+  option :page_id, :required => true
+  option :token, :required => true
+  def posts
+    begin
+      client = FBScrape::Client.new(nil, options[:token], options[:page_id])
+      client.load
+      posts = client.posts
+      puts JSON.pretty_generate(posts)
+    rescue ArgumentError => e
+      puts e.message
+    end
+  end
+
+  desc "comments", "Get all the comments for a post's shortcode"
+  option :id, :required => true
+  option :token, :required => true
+  option :page_id, :required => false
+  def comments
+    begin
+      # post = FBScrape::Post.load_from_shortcode(options[:shortcode])
+      post = FBScrape::Post.load_from_id(options[:id], options:[token])
+      post.load_all_comments
+
+      comments = post.comments
+      puts JSON.pretty_generate(comments)
+    rescue ArgumentError => e
+      puts e.message
+    end
+  end
+
+end
+
+IGScrape::CLI.start(ARGV)

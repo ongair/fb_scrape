@@ -31,14 +31,14 @@ Or install it yourself as:
     puts client.name
   ```
 
-<!-- ### Loading all the posts for an Facebook account  
+### Loading all the posts for an Facebook account  
 
   ```ruby
-    require 'ig_scrape'
-    client = FBScrape::Client.new("username")
+    require 'fb_scrape'
+    client = FBScrape::Client.new("page_name", "access_token", "page_id")
     client.load
 
-    puts client.posts.length == client.post_count
+    puts client.posts.length
   ```
 
 ### Loading a post
@@ -46,12 +46,26 @@ Or install it yourself as:
   ```ruby
     require 'fb_scrape'
 
-    post = IGScrape::Post.load_from_id(id)
-    puts post.comment_count
+    post = FBScrape::Post.load_from_id(id, access_token)    
     puts post.has_more_comments?
 
-    post.load_more_comments
+    post.load_all_comments
     puts post.has_more_comments?
+  ```
+
+
+### Loading a comment and its replies
+
+  ```ruby
+    require 'fb_scrape'
+
+    comment = FBScrape::Comment.new(payload, access_token, page_id)
+    comment.load_replies
+
+    puts comment.comments.count
+    puts comment.has_more_replies?
+    comment.load_all_replies
+    puts comment.comments.count
   ```
 
 ### Using the CLI
@@ -63,12 +77,15 @@ Or install it yourself as:
 
     fb_scrape help
 
+    # get the page id for a url
+    fb_scrape id --page_name theusername --token token
+
     # load all the posts for an account
-    fb_scrape posts --username theusername --access_token access_token
+    fb_scrape posts --page_name theusername --token token
 
     # load all the comments for a post
-    fb_scrape comments --id theid --access_token access_token
-  ``` -->
+    fb_scrape comments --id post_id --token token --page_id page_id
+  ```
 
 ## Development
 
