@@ -35,20 +35,15 @@ class FBScrape::Client
 
     def load_initial_posts
       url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
-      resp = HTTParty.get(url)
-
-      case resp.code
-        when 200
-          response = JSON.parse(resp.body)
-          data = response["data"]
-          @posts = data.collect{ |d| FBScrape::Post.new(d) }
-          @page_info = response["paging"]
-          @loaded_initial = true
-      end
+      load_posts_from_url url
     end
 
     def load_more_posts
       url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
+      load_posts_from_url url
+    end
+
+    def load_posts_from_url url
       resp = HTTParty.get(url)
 
       case resp.code
