@@ -18,14 +18,7 @@ class FBScrape::Comment
   def load_replies access_token=nil
     @access_token = access_token if access_token
     url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/comments?access_token=#{@access_token}"
-    resp = HTTParty.get(url)
-
-    case resp.code
-      when 200
-        response = JSON.parse(resp)
-        @comments = response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) }
-        @page_info = response["paging"]
-    end
+    load_from_url url
   end
 
   def has_more_replies?
@@ -46,6 +39,11 @@ class FBScrape::Comment
 
     def load_more_replies
       url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/comments?access_token=#{@access_token}&limit=25&after=next_cursor"
+      load_from_url url
+    end
+
+    def load_from_url url
+
       resp = HTTParty.get(url)
 
       case resp.code
