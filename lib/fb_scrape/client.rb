@@ -3,7 +3,6 @@ require 'httparty'
 class FBScrape::Client
 
   attr_accessor :page_name, :id, :name, :posts
-  GRAPH_VERSION = "2.10"
 
   def initialize(page_name, token_secret, id=nil)
     @page_name = page_name
@@ -35,7 +34,7 @@ class FBScrape::Client
   private
 
     def load_initial_posts
-      url = "https://graph.facebook.com/v#{GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
       resp = HTTParty.get(url)
 
       case resp.code
@@ -49,7 +48,7 @@ class FBScrape::Client
     end
 
     def load_more_posts
-      url = "https://graph.facebook.com/v#{GRAPH_VERSION}/#{id}/posts?access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
       resp = HTTParty.get(url)
 
       case resp.code

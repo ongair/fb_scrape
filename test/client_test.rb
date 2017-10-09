@@ -26,7 +26,7 @@ describe "Clients" do
     auth_token = "token"
     id = "12345"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::Client::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}")
       .to_return(status: 200, body: {
         data: [
           {
@@ -43,7 +43,7 @@ describe "Clients" do
       }.to_json
     )
 
-    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::Client::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}&limit=25&after=next_cursor")
+    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}&limit=25&after=next_cursor")
       .to_return(status: 200, body: {
         data: [
           {
