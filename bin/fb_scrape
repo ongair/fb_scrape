@@ -52,4 +52,4 @@ class FBScrape::CLI < Thor
 
 end
 
-IGScrape::CLI.start(ARGV)
+FBScrape::CLI.start(ARGV)
