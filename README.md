@@ -68,7 +68,7 @@ Or install it yourself as:
     comment.load_all_replies
     puts comment.comments.count
   ```
-<!---
+
 ### Using the CLI
 
   You can use the CLI to get a dump in JSON of posts and comments
@@ -78,12 +78,15 @@ Or install it yourself as:
 
     fb_scrape help
 
+    # get the page id for a url
+    fb_scrape id --page_name theusername --token token
+
     # load all the posts for an account
-    fb_scrape posts --username theusername --access_token access_token
+    fb_scrape posts --page_name theusername --token token
 
     # load all the comments for a post
-    fb_scrape comments --id theid --access_token access_token
-  ``` -->
+    fb_scrape comments --id post_id --token token --page_id page_id
+  ```
 
 ## Development
 
