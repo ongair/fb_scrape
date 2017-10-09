@@ -54,7 +54,7 @@ class FBScrape::Post
 
 
     def next_cursor
-      @page_info["cursors"]["next"]
+      @page_info["cursors"]["after"]
     end
 
     def load_from_payload payload

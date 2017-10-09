@@ -27,7 +27,6 @@ Or install it yourself as:
     require 'fb_scrape'
 
     client = FBScrape::Client.new("page_name", "access_token")
-    client.init
     puts client.id
     puts client.name
   ```

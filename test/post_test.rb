@@ -21,7 +21,7 @@ describe "Posts and their comments" do
         ],
         paging: {
           cursors: {
-            next: "next_cursor"
+            after: "next_cursor"
           }
         }
       }.to_json

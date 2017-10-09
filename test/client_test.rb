@@ -14,7 +14,6 @@ describe "Clients" do
       }.to_json)
 
     client = FBScrape::Client.new(page_name, oauth_token)
-    client.init
 
     assert_requested stub
     assert_equal client.id, '12345'
@@ -37,7 +36,7 @@ describe "Clients" do
         ],
         paging: {
           cursors: {
-            next: "next_cursor"
+            after: "next_cursor"
           }
         }
       }.to_json

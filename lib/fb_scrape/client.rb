@@ -12,15 +12,13 @@ class FBScrape::Client
     @loaded_initial = false
     if @id
       load_initial_posts
+    else
+      get_page_id
     end
   end
 
-  def init
-    get_page_id
-  end
-
-
   def load
+    load_initial_posts
     while has_more_posts? do
       # load more posts
       load_more_posts
@@ -34,8 +32,11 @@ class FBScrape::Client
   private
 
     def load_initial_posts
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
-      load_posts_from_url url
+      if !@loaded_initial
+        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
+        load_posts_from_url url
+        @loaded_initial = true
+      end
     end
 
     def load_more_posts
@@ -45,7 +46,6 @@ class FBScrape::Client
 
     def load_posts_from_url url
       resp = HTTParty.get(url)
-
       case resp.code
         when 200
           response = JSON.parse(resp.body)
@@ -56,7 +56,7 @@ class FBScrape::Client
     end
 
     def next_cursor
-      @page_info["cursors"]["next"]
+      @page_info["cursors"]["after"]
     end
 
     def get_page_id
