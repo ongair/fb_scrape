@@ -26,7 +26,7 @@ describe "Clients" do
     auth_token = "token"
     id = "12345"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v2.10/#{id}/posts?access_token=#{auth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::Client::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}")
       .to_return(status: 200, body: {
         data: [
           {
@@ -37,17 +37,44 @@ describe "Clients" do
         ],
         paging: {
           cursors: {
-            before: "next_cursor"
+            next: "next_cursor"
+          }
+        }
+      }.to_json
+    )
+
+    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::Client::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}&limit=25&after=next_cursor")
+      .to_return(status: 200, body: {
+        data: [
+          {
+            created_at: "2017-06-23T06:00:21+0000",
+            message: "Saturday!",
+            id: "post_id_1"
+          },
+          {
+            created_at: "2017-06-23T06:00:21+0000",
+            message: "Saturday!",
+            id: "post_id_1"
+          }
+        ],
+        paging: {
+          cursors: {
+            before: "before_cursor"
           }
         }
       }.to_json
     )
 
     client = FBScrape::Client.new(page_name, auth_token, id)
-    client.load_posts
 
     assert_requested stub
     assert_equal 1, client.posts.count
+    assert client.has_more_posts?
+
+    client.load
+    assert_requested more_stub
+    assert !client.has_more_posts?
+    assert_equal 3, client.posts.count
   end
 
 end
