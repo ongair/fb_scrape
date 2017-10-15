@@ -6,13 +6,17 @@ require 'json'
 
 class FBScrape::CLI < Thor
 
+  desc "version", "Get the version of the client running"
+  def version
+    puts FBScrape::VERSION
+  end
+
   desc "id", "Get the page_id for page"
   option :page_name, :required => true
   option :token, :required => true
   def id
     begin
       client = FBScrape::Client.new(options[:page_name], options[:token])
-      client.init
       puts client.id
     rescue ArgumentError => e
       puts e.message
