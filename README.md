@@ -41,6 +41,18 @@ Or install it yourself as:
     puts client.posts.length
   ```
 
+#### Limiting the number of posts
+
+  You can limit the number of posts returned
+
+  ```ruby
+  require 'fb_scrape'
+  client = FBScrape::Client.new("page_name", "access_token", "page_id", 10)
+  client.load
+
+  puts client.posts.length <= 10
+  ```
+
 ### Loading a post
 
   ```ruby

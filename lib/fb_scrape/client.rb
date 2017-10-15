@@ -4,12 +4,13 @@ class FBScrape::Client
 
   attr_accessor :page_name, :id, :name, :posts
 
-  def initialize(page_name, token_secret, id=nil)
+  def initialize(page_name, token_secret, id=nil, limit=nil)
     @page_name = page_name
     @token_secret = token_secret
     @id = id
     @posts = []
     @loaded_initial = false
+    @limit = limit
     if @id
       load_initial_posts
     else
@@ -17,12 +18,21 @@ class FBScrape::Client
     end
   end
 
-  def load
+  def load(limit=nil)
     load_initial_posts
-    while has_more_posts? do
+    @limit = limit if !@limit.nil?
+    while has_more_posts? && is_under_limit? do
       # load more posts
       load_more_posts
     end
+  end
+
+  def is_under_limit?
+    !is_limited? || @posts.count < @limit
+  end
+
+  def is_limited?
+    !@limit.nil?
   end
 
   def has_more_posts?
