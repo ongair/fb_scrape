@@ -44,14 +44,14 @@ class FBScrape::Client
 
     def load_initial_posts
       if !@loaded_initial
-        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
+        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?fields=link,message,created_time&access_token=#{@token_secret}"
         load_posts_from_url url
         @loaded_initial = true
       end
     end
 
     def load_more_posts
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
       load_posts_from_url url
     end
 

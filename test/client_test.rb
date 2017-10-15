@@ -25,8 +25,7 @@ describe "Clients" do
     oauth_token = "token"
     id = "12345"
 
-    # stub = stub_request(:get, "https://graph.facebook.com/#{page_name}?access_token=#{oauth_token}")
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{oauth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{oauth_token}")
       .to_return(status: 400, body: {
         error: {
           message: "Error validating access token: Session has expired"
@@ -44,7 +43,7 @@ describe "Clients" do
     auth_token = "token"
     id = "12345"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{auth_token}")
       .to_return(status: 200, body: {
         data: [
           {
@@ -61,7 +60,7 @@ describe "Clients" do
       }.to_json
     )
 
-    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}&limit=25&after=next_cursor")
+    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{auth_token}&limit=25&after=next_cursor")
       .to_return(status: 200, body: {
         data: [
           {
@@ -101,7 +100,7 @@ describe "Clients" do
     auth_token = "token"
     id = "12345"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{auth_token}")
       .to_return(status: 200, body: {
         data: [
           {
@@ -123,7 +122,7 @@ describe "Clients" do
       }.to_json
     )
 
-    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{auth_token}&limit=25&after=next_cursor")
+    more_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{auth_token}&limit=25&after=next_cursor")
       .to_return(status: 200, body: {
         data: [
           {

@@ -2,7 +2,7 @@ require 'json'
 
 class FBScrape::Post
 
-  attr_accessor :id, :created_at, :message, :comments
+  attr_accessor :id, :created_at, :message, :comments, :link
 
   def initialize payload
     @comments = []
@@ -70,5 +70,6 @@ class FBScrape::Post
       @id = payload["id"]
       @created_at = payload["created_time"]
       @message = payload["message"]
+      @link = payload["link"]
     end
 end
