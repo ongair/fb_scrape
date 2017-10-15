@@ -49,7 +49,6 @@ class FBScrape::Post
 
     def load_from_url url
       resp = HTTParty.get(url)
-      puts "Resp #{resp.body}"
       case resp.code
         when 200
           response = JSON.parse(resp.body)

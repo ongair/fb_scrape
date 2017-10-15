@@ -62,6 +62,10 @@ class FBScrape::Comment
           response = JSON.parse(resp.body)
           @replies = @replies.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) })
           @page_info = response["paging"]
+        when 400
+          response = JSON.parse(resp.body)
+          error = response["error"]["message"]
+          raise ArgumentError.new(error)
       end
     end
 
