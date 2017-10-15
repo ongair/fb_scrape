@@ -26,14 +26,17 @@ class FBScrape::CLI < Thor
   desc "posts", "Get all the posts for the page"
   option :page_id, :required => true
   option :token, :required => true
+  option :limit, :required => false
   def posts
     begin
+      limit = options[:limit] || nil
       client = FBScrape::Client.new(nil, options[:token], options[:page_id])
-      client.load
+      client.load(limit)
+
       posts = client.posts
       puts JSON.pretty_generate(posts)
     rescue ArgumentError => e
-      puts e.message
+      puts "Error:" + e.message
     end
   end
 
