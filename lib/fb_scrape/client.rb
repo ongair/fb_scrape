@@ -20,7 +20,8 @@ class FBScrape::Client
 
   def load(limit=nil)
     load_initial_posts
-    @limit = limit if !@limit.nil?
+    @limit = limit if limit != @limit
+
     while has_more_posts? && is_under_limit? do
       # load more posts
       load_more_posts
@@ -28,7 +29,7 @@ class FBScrape::Client
   end
 
   def is_under_limit?
-    !is_limited? || @posts.count < @limit
+    !is_limited? || @posts.count < @limit.to_i
   end
 
   def is_limited?
@@ -87,7 +88,7 @@ class FBScrape::Client
           @name = response["name"]
           @id = response["id"]
         when 400
-          handle_error(resp)          
+          handle_error(resp)
       end
     end
 
