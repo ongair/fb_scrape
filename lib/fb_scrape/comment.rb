@@ -2,10 +2,10 @@ require 'json'
 
 class FBScrape::Comment
 
-  attr_accessor :id, :created_at, :from_name, :from_id, :message, :comments
+  attr_accessor :id, :created_at, :from_name, :from_id, :page_id, :message, :replies
 
   def initialize(payload, access_token=nil, page_id=nil)
-    @comments = []
+    @replies = []
     @access_token = access_token
     @page_id = page_id
     load_from_payload payload
@@ -31,6 +31,17 @@ class FBScrape::Comment
     end
   end
 
+  def to_json(*args)
+    JSON.pretty_generate({
+      id: @id,
+      created_at: @created_at,
+      from_name: @from_name,
+      from_id: @from_id,
+      page_id: @page_id,
+      message: @message
+    })
+  end
+
   private
 
     def next_cursor
@@ -48,16 +59,20 @@ class FBScrape::Comment
 
       case resp.code
         when 200
-          response = JSON.parse(resp)
-          @comments = @comments.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) })
+          response = JSON.parse(resp.body)
+          @replies = @replies.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) })
           @page_info = response["paging"]
+        when 400
+          response = JSON.parse(resp.body)
+          error = response["error"]["message"]
+          raise ArgumentError.new(error)
       end
     end
 
     def load_from_payload payload
       if payload
         @id =  payload['id']
-        @created_at = payload['created_at']
+        @created_at = payload['created_time']
         @message = payload['message']
 
         if payload['from']

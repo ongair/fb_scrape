@@ -4,12 +4,13 @@ class FBScrape::Client
 
   attr_accessor :page_name, :id, :name, :posts
 
-  def initialize(page_name, token_secret, id=nil)
+  def initialize(page_name, token_secret, id=nil, limit=nil)
     @page_name = page_name
     @token_secret = token_secret
     @id = id
     @posts = []
     @loaded_initial = false
+    @limit = limit
     if @id
       load_initial_posts
     else
@@ -17,12 +18,22 @@ class FBScrape::Client
     end
   end
 
-  def load
+  def load(limit=nil)
     load_initial_posts
-    while has_more_posts? do
+    @limit = limit if limit != @limit
+
+    while has_more_posts? && is_under_limit? do
       # load more posts
       load_more_posts
     end
+  end
+
+  def is_under_limit?
+    !is_limited? || @posts.count < @limit.to_i
+  end
+
+  def is_limited?
+    !@limit.nil?
   end
 
   def has_more_posts?
@@ -33,14 +44,14 @@ class FBScrape::Client
 
     def load_initial_posts
       if !@loaded_initial
-        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?access_token=#{@token_secret}"
+        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/posts?fields=link,message,created_time&access_token=#{@token_secret}"
         load_posts_from_url url
         @loaded_initial = true
       end
     end
 
     def load_more_posts
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
       load_posts_from_url url
     end
 
@@ -52,7 +63,15 @@ class FBScrape::Client
           more_posts = response["data"].collect { |p| FBScrape::Post.new(p) }
           @posts = @posts.concat(more_posts)
           @page_info = response["paging"]
+        when 400
+          handle_error(resp)
       end
+    end
+
+    def handle_error resp
+      response = JSON.parse(resp.body)
+      error = response["error"]["message"]
+      raise ArgumentError.new(error)
     end
 
     def next_cursor
@@ -69,9 +88,7 @@ class FBScrape::Client
           @name = response["name"]
           @id = response["id"]
         when 400
-          response = JSON.parse(resp.body)
-          error = response["error"]["message"]
-          raise ArgumentError.new(error)
+          handle_error(resp)
       end
     end
 

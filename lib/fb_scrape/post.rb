@@ -2,24 +2,25 @@ require 'json'
 
 class FBScrape::Post
 
-  attr_accessor :id, :created_at, :message, :comments
+  attr_accessor :id, :created_at, :message, :comments, :link
 
-  def initialize payload
+  def initialize payload, page_id=nil, token=nil
     @comments = []
+    @page_id = page_id
+    @token = token
 
     if payload
       load_from_payload(payload)
     end
   end
 
-  def self.load_from_id id, access_token
-    post = FBScrape::Post.new({ 'id' => id })
-    post.load_comments(access_token)
+  def self.load_from_id id, access_token, page_id=nil
+    post = FBScrape::Post.new({ 'id' => id }, page_id, access_token)
+    post.load_comments
     post
   end
 
-  def load_comments token
-    @token = token
+  def load_comments
     url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/comments?access_token=#{@token}"
     load_from_url url
   end
@@ -34,16 +35,29 @@ class FBScrape::Post
     end
   end
 
+  def to_json(*args)
+    JSON.pretty_generate({
+      id: @id,
+      created_at: @created_at,
+      message: @message,
+      link: @link
+    })
+  end
+
+
   private
 
     def load_from_url url
       resp = HTTParty.get(url)
-
       case resp.code
         when 200
           response = JSON.parse(resp.body)
-          @comments = @comments.concat(response["data"].collect{ |c| FBScrape::Comment.new(c) })
+          @comments = @comments.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @token, @page_id) })
           @page_info = response["paging"]
+        when 400
+          response = JSON.parse(resp.body)
+          error = response["error"]["message"]
+          raise ArgumentError.new(error)
       end
     end
 
@@ -59,7 +73,8 @@ class FBScrape::Post
 
     def load_from_payload payload
       @id = payload["id"]
-      @created_at = payload["created_at"]
+      @created_at = payload["created_time"]
       @message = payload["message"]
+      @link = payload["link"]
     end
 end

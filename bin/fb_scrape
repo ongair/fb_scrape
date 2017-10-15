@@ -6,13 +6,17 @@ require 'json'
 
 class FBScrape::CLI < Thor
 
+  desc "version", "Get the version of the client running"
+  def version
+    puts FBScrape::VERSION
+  end
+
   desc "id", "Get the page_id for page"
   option :page_name, :required => true
   option :token, :required => true
   def id
     begin
       client = FBScrape::Client.new(options[:page_name], options[:token])
-      client.init
       puts client.id
     rescue ArgumentError => e
       puts e.message
@@ -22,14 +26,17 @@ class FBScrape::CLI < Thor
   desc "posts", "Get all the posts for the page"
   option :page_id, :required => true
   option :token, :required => true
+  option :limit, :required => false
   def posts
     begin
+      limit = options[:limit] || nil
       client = FBScrape::Client.new(nil, options[:token], options[:page_id])
-      client.load
+      client.load(limit)
+
       posts = client.posts
       puts JSON.pretty_generate(posts)
     rescue ArgumentError => e
-      puts e.message
+      puts "Error:" + e.message
     end
   end
 
@@ -39,8 +46,11 @@ class FBScrape::CLI < Thor
   option :page_id, :required => false
   def comments
     begin
-      # post = FBScrape::Post.load_from_shortcode(options[:shortcode])
-      post = FBScrape::Post.load_from_id(options[:id], options:[token])
+
+      token = options[:token]
+      id = options[:id]
+
+      post = FBScrape::Post.load_from_id(id, token)
       post.load_all_comments
 
       comments = post.comments
@@ -52,4 +62,4 @@ class FBScrape::CLI < Thor
 
 end
 
-IGScrape::CLI.start(ARGV)
+FBScrape::CLI.start(ARGV)
