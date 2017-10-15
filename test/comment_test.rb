@@ -16,7 +16,7 @@ describe "Posts and their comments" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-03-28T07:21:27+0000",
+            created_time: "2017-03-28T07:21:27+0000",
             from: {
               name: "Samuel Wanjala",
               id: '2345678'
@@ -37,7 +37,7 @@ describe "Posts and their comments" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-03-28T07:21:27+0000",
+            created_time: "2017-03-28T07:21:27+0000",
             from: {
               name: "Samuel",
               id: '63478428932'

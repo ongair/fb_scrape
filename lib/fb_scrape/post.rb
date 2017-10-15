@@ -35,10 +35,11 @@ class FBScrape::Post
   end
 
   def to_json(*args)
-    JSON.generate({
+    JSON.pretty_generate({
       id: @id,
       created_at: @created_at,
-      message: @message
+      message: @message,
+      link: @link
     })
   end
 

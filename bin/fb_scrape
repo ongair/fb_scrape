@@ -46,8 +46,11 @@ class FBScrape::CLI < Thor
   option :page_id, :required => false
   def comments
     begin
-      # post = FBScrape::Post.load_from_shortcode(options[:shortcode])
-      post = FBScrape::Post.load_from_id(options[:id], options:[token])
+
+      token = options[:token]
+      id = options[:id]
+
+      post = FBScrape::Post.load_from_id(id, token)
       post.load_all_comments
 
       comments = post.comments

@@ -47,7 +47,7 @@ describe "Clients" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Its furahi day!",
             id: "post_id"
           }
@@ -64,12 +64,12 @@ describe "Clients" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Saturday!",
             id: "post_id_1"
           },
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Saturday!",
             id: "post_id_1"
           }
@@ -104,12 +104,12 @@ describe "Clients" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Its furahi day!",
             id: "post_id"
           },
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Its furahi day!",
             id: "post_id_2"
           }
@@ -126,12 +126,12 @@ describe "Clients" do
       .to_return(status: 200, body: {
         data: [
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Saturday!",
             id: "post_id_1"
           },
           {
-            created_at: "2017-06-23T06:00:21+0000",
+            created_time: "2017-06-23T06:00:21+0000",
             message: "Saturday!",
             id: "post_id_1"
           }

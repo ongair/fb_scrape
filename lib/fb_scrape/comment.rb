@@ -31,6 +31,16 @@ class FBScrape::Comment
     end
   end
 
+  def to_json(*args)
+    JSON.pretty_generate({
+      id: @id,
+      created_at: @created_at,
+      from_name: @from_name,
+      from_id: @from_id,
+      message: @message
+    })
+  end
+
   private
 
     def next_cursor
@@ -57,7 +67,7 @@ class FBScrape::Comment
     def load_from_payload payload
       if payload
         @id =  payload['id']
-        @created_at = payload['created_at']
+        @created_at = payload['created_time']
         @message = payload['message']
 
         if payload['from']
