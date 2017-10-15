@@ -2,7 +2,7 @@ require 'json'
 
 class FBScrape::Comment
 
-  attr_accessor :id, :created_at, :from_name, :from_id, :message, :comments
+  attr_accessor :id, :created_at, :from_name, :from_id, :page_id, :message, :comments
 
   def initialize(payload, access_token=nil, page_id=nil)
     @comments = []
@@ -37,6 +37,7 @@ class FBScrape::Comment
       created_at: @created_at,
       from_name: @from_name,
       from_id: @from_id,
+      page_id: @page_id,
       message: @message
     })
   end
