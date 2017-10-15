@@ -34,6 +34,15 @@ class FBScrape::Post
     end
   end
 
+  def to_json(*args)
+    JSON.generate({
+      id: @id,
+      created_at: @created_at,
+      message: @message
+    })
+  end
+
+
   private
 
     def load_from_url url
@@ -59,7 +68,7 @@ class FBScrape::Post
 
     def load_from_payload payload
       @id = payload["id"]
-      @created_at = payload["created_at"]
+      @created_at = payload["created_time"]
       @message = payload["message"]
     end
 end
