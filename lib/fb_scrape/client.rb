@@ -62,7 +62,15 @@ class FBScrape::Client
           more_posts = response["data"].collect { |p| FBScrape::Post.new(p) }
           @posts = @posts.concat(more_posts)
           @page_info = response["paging"]
+        when 400
+          handle_error(resp)
       end
+    end
+
+    def handle_error resp
+      response = JSON.parse(resp.body)
+      error = response["error"]["message"]
+      raise ArgumentError.new(error)
     end
 
     def next_cursor
@@ -79,9 +87,7 @@ class FBScrape::Client
           @name = response["name"]
           @id = response["id"]
         when 400
-          response = JSON.parse(resp.body)
-          error = response["error"]["message"]
-          raise ArgumentError.new(error)
+          handle_error(resp)          
       end
     end
 
