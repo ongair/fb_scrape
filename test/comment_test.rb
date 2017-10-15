@@ -56,12 +56,12 @@ describe "Posts and their comments" do
 
     comment.load_replies
     assert_requested stub
-    assert_equal 1, comment.comments.count
+    assert_equal 1, comment.replies.count
     assert comment.has_more_replies?
 
     comment.load_all_replies
     assert_requested more_stub
-    assert_equal 2, comment.comments.count
+    assert_equal 2, comment.replies.count
   end
 
 end

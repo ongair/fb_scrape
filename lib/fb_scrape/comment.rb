@@ -2,10 +2,10 @@ require 'json'
 
 class FBScrape::Comment
 
-  attr_accessor :id, :created_at, :from_name, :from_id, :page_id, :message, :comments
+  attr_accessor :id, :created_at, :from_name, :from_id, :page_id, :message, :replies
 
   def initialize(payload, access_token=nil, page_id=nil)
-    @comments = []
+    @replies = []
     @access_token = access_token
     @page_id = page_id
     load_from_payload payload
@@ -59,8 +59,8 @@ class FBScrape::Comment
 
       case resp.code
         when 200
-          response = JSON.parse(resp)
-          @comments = @comments.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) })
+          response = JSON.parse(resp.body)
+          @replies = @replies.concat(response["data"].collect{ |c| FBScrape::Comment.new(c, @access_token, @page_id) })
           @page_info = response["paging"]
       end
     end
