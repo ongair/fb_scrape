@@ -25,8 +25,8 @@ class FBScrape::Comment
     @page_info && next_cursor
   end
 
-  def load_all_replies
-    while has_more_replies? do
+  def load_all_replies(limit=nil)
+    while has_more_replies? && is_below_limit?(limit) do
       load_more_replies
     end
   end
@@ -43,6 +43,11 @@ class FBScrape::Comment
   end
 
   private
+
+    def is_below_limit?(limit)
+      is_below_limit = limit.nil? || @replies.length < limit
+    end
+
 
     def next_cursor
       @page_info["cursors"]["next"]
