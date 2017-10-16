@@ -29,11 +29,13 @@ class FBScrape::Post
     @page_info && next_cursor
   end
 
-  def load_all_comments
-    while has_more_comments? do
+  def load_all_comments(limit=nil)
+    while has_more_comments? && is_below_limit?(limit) do
       load_more_comments
     end
   end
+
+
 
   def to_json(*args)
     JSON.pretty_generate({
@@ -46,6 +48,10 @@ class FBScrape::Post
 
 
   private
+
+    def is_below_limit?(limit)
+      is_below_limit = limit.nil? || @comments.length < limit
+    end
 
     def load_from_url url
       resp = HTTParty.get(url)
