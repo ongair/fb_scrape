@@ -6,31 +6,49 @@ class FBScrape::Conversation
     @id = id
     @page_id = page_id
     @token = token
+    @page_info = nil
+    @messages = []
 
     if load_on_init
-      load_from_url id, token
+      load_messages
     end
   end
 
   def load_messages
-    load_from_url @id, @token
+    load_initial_messages
+
+    while has_more_messages?
+      load_more_messages
+    end
   end
 
-
-  # def self.load_from_id id, token, page_id=nil
-  #   conversation = FBScrape::Conversation.new(id, page_id)
-  #   # conversation.load_from_url id, token
-  # end
+  def has_more_messages?
+    @page_info && next_cursor
+  end
 
   private
-    def load_from_url id, token
 
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from}"
+    def next_cursor
+      @page_info["cursors"]["after"]
+    end
+
+    def load_initial_messages
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from}"
+      load_from_url url
+    end
+
+    def load_more_messages
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from}&limit=25&after=#{next_cursor}"
+      load_from_url url
+    end
+
+    def load_from_url url
       resp = HTTParty.get(url)
       case resp.code
         when 200
           response = JSON.parse(resp.body)
-          @messages = response['messages']['data'].collect { |m| FBScrape::Message.new(m, @page_id) }
+          @messages = @messages.concat(response['messages']['data'].collect { |m| FBScrape::Message.new(m, @page_id) })
+          @page_info = response['messages']['paging']
         when 400
       end
     end

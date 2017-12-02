@@ -45,7 +45,44 @@ describe "Conversation threads within the inbox" do
               id: "message_id_2",
               created_time: "2017-11-28T18:40:06+0000"
             }
-          ]
+          ],
+          paging: {
+            cursors: {
+              before: "before",
+              after: "after"
+            }
+          }
+        }
+      }.to_json
+    )
+
+    next_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from}&limit=25&after=after")
+      .to_return(status: 200, body: {
+        messages: {
+          data: [
+            {
+              message: "Your debit card seems to be okay and active",
+              to: {
+                data: [
+                  {
+                    name: "Customer",
+                    id: "customer_id"
+                  }
+                ]
+              },
+              from: {
+                id: "page_id",
+                name: "Page"
+              },
+              id: "message_id_3",
+              created_time: "2017-11-28T18:39:05+0000"
+            }
+          ],
+          paging: {
+            cursors: {
+              before: "before"
+            }
+          }
         }
       }.to_json
     )
@@ -54,7 +91,9 @@ describe "Conversation threads within the inbox" do
 
     assert_equal id, conversation.id
     assert_requested stub
-    assert_equal 2, conversation.messages.count
+    refute conversation.has_more_messages?
+    assert_requested next_stub
+    assert_equal 3, conversation.messages.count
   end
 
 end
