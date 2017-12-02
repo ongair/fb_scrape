@@ -11,7 +11,9 @@ class FBScrape::Client
     @posts = []
     @conversations = []
     @loaded_initial = false
+    @loaded_initial_conversations = false
     @limit = limit
+    @conversations_page_info = nil
     if @id && load_on_init
       load_initial_posts
     elsif !@id
@@ -41,22 +43,36 @@ class FBScrape::Client
     @page_info && next_cursor
   end
 
-  def load_conversations
+  def can_load_more_conversations?
+    !is_limited? || (@conversations.count < @limit.to_i && has_more_conversations?)
+  end
+
+  def has_more_conversations?
+    @conversations_page_info && next_conversation_cursor
+  end
+
+  def load_conversations(limit=nil)
     load_initial_conversations
+    @limit = limit if limit != @limit
+
+    while has_more_conversations? && can_load_more_conversations? do
+      load_more_conversations
+    end
   end
 
   private
 
     def load_initial_conversations
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/conversations?access_token=#{@token_secret}"
-      resp = HTTParty.get(url)
-      case resp.code
-        when 200
-          response = JSON.parse(resp.body)
-          @conversations = response['data'].collect { |c| FBScrape::Conversation.new(c['id'], @id, @token_secret, false) }
-        when 400
-          handle_error(resp)
+      if !@loaded_initial_conversations
+        url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/conversations?access_token=#{@token_secret}"
+        load_conversations_from_url url
+        @loaded_initial_conversations = true
       end
+    end
+
+    def load_more_conversations
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/conversations?access_token=#{@token_secret}&limit=25&after=#{next_conversation_cursor}"
+      load_conversations_from_url url
     end
 
     def load_initial_posts
@@ -70,6 +86,19 @@ class FBScrape::Client
     def load_more_posts
       url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/posts?fields=link,message,created_time&access_token=#{@token_secret}&limit=25&after=#{next_cursor}"
       load_posts_from_url url
+    end
+
+    def load_conversations_from_url url
+      resp = HTTParty.get(url)
+      case resp.code
+        when 200
+          response = JSON.parse(resp.body)
+          response['data'].collect { |c| FBScrape::Conversation.new(c['id'], @id, @token_secret, false) }
+          @conversations = @conversations.concat(response['data'].collect { |c| FBScrape::Conversation.new(c['id'], @id, @token_secret, false) })
+          @conversations_page_info = response["paging"]
+        when 400
+          handle_error(resp)
+      end
     end
 
     def load_posts_from_url url
@@ -93,6 +122,10 @@ class FBScrape::Client
 
     def next_cursor
       @page_info["cursors"]["after"]
+    end
+
+    def next_conversation_cursor
+      @conversations_page_info["cursors"]["after"]
     end
 
     def get_page_id
