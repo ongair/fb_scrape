@@ -55,6 +55,7 @@ class FBScrape::Client
           response = JSON.parse(resp.body)
           @conversations = response['data'].collect { |c| FBScrape::Conversation.new(c['id'], @id, @token_secret, false) }
         when 400
+          handle_error(resp)
       end
     end
 

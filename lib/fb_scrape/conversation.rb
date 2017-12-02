@@ -12,6 +12,11 @@ class FBScrape::Conversation
     end
   end
 
+  def load_messages
+    load_from_url @id, @token
+  end
+
+
   # def self.load_from_id id, token, page_id=nil
   #   conversation = FBScrape::Conversation.new(id, page_id)
   #   # conversation.load_from_url id, token
