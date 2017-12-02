@@ -16,10 +16,6 @@ class FBScrape::Conversation
 
   def load_messages
     load_initial_messages
-
-    while has_more_messages?
-      load_more_messages
-    end
   end
 
   def has_more_messages?
