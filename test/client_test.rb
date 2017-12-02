@@ -157,4 +157,34 @@ describe "Clients" do
     client.load
     assert_requested more_stub
   end
+
+  it "Can load conversations" do
+    auth_token = "token"
+    id = "12345"
+
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/conversations?access_token=#{auth_token}")
+      .to_return(status: 200, body: {
+        data: [
+          {
+            id: '1',
+            updated_time: '2017-12-02T02:19:23+0000'
+          },
+          {
+            id: '2',
+            updated_time: '2017-12-02T02:19:23+0000'
+          },
+          {
+            id: '3',
+            updated_time: '2017-12-02T02:19:23+0000'
+          }
+        ]
+      }.to_json
+    )
+
+    client = FBScrape::Client.new(nil, auth_token, id, 5, false)
+    client.load_conversations
+
+    assert_requested stub
+    assert_equal 3, client.conversations.count
+  end
 end

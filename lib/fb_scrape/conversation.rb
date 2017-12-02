@@ -1,11 +1,15 @@
 class FBScrape::Conversation
 
-  attr_accessor :id, :page_id, :messages
+  attr_accessor :id, :page_id, :messages, :updated_at
 
-  def initialize id, page_id, token
+  def initialize id, page_id, token, load_on_init=true
     @id = id
     @page_id = page_id
-    load_from_url id, token
+    @token = token
+
+    if load_on_init
+      load_from_url id, token
+    end
   end
 
   # def self.load_from_id id, token, page_id=nil

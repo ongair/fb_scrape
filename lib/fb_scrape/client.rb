@@ -2,18 +2,19 @@ require 'httparty'
 
 class FBScrape::Client
 
-  attr_accessor :page_name, :id, :name, :posts
+  attr_accessor :page_name, :id, :name, :posts, :conversations
 
-  def initialize(page_name, token_secret, id=nil, limit=nil)
+  def initialize(page_name, token_secret, id=nil, limit=nil, load_on_init=true)
     @page_name = page_name
     @token_secret = token_secret
     @id = id
     @posts = []
+    @conversations = []
     @loaded_initial = false
     @limit = limit
-    if @id
+    if @id && load_on_init
       load_initial_posts
-    else
+    elsif !@id
       get_page_id
     end
   end
@@ -40,7 +41,22 @@ class FBScrape::Client
     @page_info && next_cursor
   end
 
+  def load_conversations
+    load_initial_conversations
+  end
+
   private
+
+    def load_initial_conversations
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/conversations?access_token=#{@token_secret}"
+      resp = HTTParty.get(url)
+      case resp.code
+        when 200
+          response = JSON.parse(resp.body)
+          @conversations = response['data'].collect { |c| FBScrape::Conversation.new(c['id'], @id, @token_secret, false) }
+        when 400
+      end
+    end
 
     def load_initial_posts
       if !@loaded_initial
