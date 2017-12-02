@@ -157,4 +157,64 @@ describe "Clients" do
     client.load
     assert_requested more_stub
   end
+
+  it "Can load conversations" do
+    auth_token = "token"
+    id = "12345"
+
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/conversations?access_token=#{auth_token}")
+      .to_return(status: 200, body: {
+        data: [
+          {
+            id: '1',
+            updated_time: '2017-12-02T02:19:23+0000'
+          },
+          {
+            id: '2',
+            updated_time: '2017-12-02T02:19:23+0000'
+          },
+          {
+            id: '3',
+            updated_time: '2017-12-02T02:19:23+0000'
+          }
+        ],
+        paging: {
+          cursors: {
+            before: "before",
+            after: "after"
+          },
+          next: "https://graph.facebook.com/v2.11/119285948148751/conversations?access_token=#{auth_token}&pretty=0&limit=25&after=after"
+        }
+      }.to_json
+    )
+
+    next_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/conversations?access_token=#{auth_token}&limit=25&after=after")
+      .to_return(status: 200, body: {
+        data: [
+          {
+            id: '4',
+            updated_time: '2017-12-02T02:19:23+0000'
+          },
+          {
+            id: '5',
+            updated_time: '2017-12-02T02:19:23+0000'
+          }
+        ],
+        paging: {
+          cursors: {
+            before: "before"
+          }
+        }
+      }.to_json
+    )
+
+    client = FBScrape::Client.new(nil, auth_token, id, 5, false)
+    client.load_conversations(10)
+
+    assert_requested stub
+    assert_requested next_stub
+    assert_equal 5, client.conversations.count
+    refute client.has_more_conversations?
+    refute client.can_load_more_conversations?
+  end
 end

@@ -80,6 +80,15 @@ Or install it yourself as:
     puts comment.comments.count
   ```
 
+### Loading an entire conversation
+
+  ```ruby
+    require 'fb_scrape'
+
+    conversation = FBScrape::Conversation.new(conversation_id, page_id, token)
+    puts conversation.messages.count
+  ```
+
 ### Using the CLI
 
   You can use the CLI to get a dump in JSON of posts and comments
