@@ -162,7 +162,7 @@ describe "Clients" do
     auth_token = "token"
     id = "12345"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/conversations?access_token=#{auth_token}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}/conversations?access_token=#{auth_token}&limit=10")
       .to_return(status: 200, body: {
         data: [
           {
