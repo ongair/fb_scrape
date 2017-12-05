@@ -3,6 +3,7 @@
 require 'fb_scrape'
 require 'thor'
 require 'json'
+require 'csv'
 
 class FBScrape::CLI < Thor
 
@@ -78,6 +79,15 @@ class FBScrape::CLI < Thor
 
       messages = client.conversations.collect{ |c| c.messages }.flatten
       puts "Total messages #{messages.count}"
+
+      CSV.open(options[:out_file], "w") do |w|
+        w << ["message_id", "conversation_id", "from", "text", "is_reply", "created_at"]
+
+        messages.each do |m|
+          w << [m.id, m.conversation_id, m.from_name, m.text, m.is_reply?, m.created_at ]
+        end
+      end
+
 
     rescue ArgumentError => e
       puts e.message
