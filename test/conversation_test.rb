@@ -7,7 +7,7 @@ describe "Conversation threads within the inbox" do
     page_id = "page_id"
     token = "09876"
 
-    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from}")
+    stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from,created_time}")
       .to_return(status: 200, body: {
         messages: {
           data: [
@@ -56,7 +56,7 @@ describe "Conversation threads within the inbox" do
       }.to_json
     )
 
-    next_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from}&limit=25&after=after")
+    next_stub = stub_request(:get, "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{id}?access_token=#{token}&fields=messages{message,to,from,created_time}&limit=25&after=after")
       .to_return(status: 200, body: {
         messages: {
           data: [
