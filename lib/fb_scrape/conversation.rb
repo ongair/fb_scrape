@@ -29,12 +29,12 @@ class FBScrape::Conversation
     end
 
     def load_initial_messages
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from,created_time}"
       load_from_url url
     end
 
     def load_more_messages
-      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from}&limit=25&after=#{next_cursor}"
+      url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}?access_token=#{@token}&fields=messages{message,to,from,created_time}&limit=25&after=#{next_cursor}"
       load_from_url url
     end
 
