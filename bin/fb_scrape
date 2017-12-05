@@ -60,6 +60,30 @@ class FBScrape::CLI < Thor
     end
   end
 
+  desc "export_messages", "Get all the comments for a post's shortcode"
+  option :limit, :required => true
+  option :token, :required => true
+  option :page_id, :required => true
+  option :out_file, :required => true
+  def export_messages
+    begin
+      # exports all a pages conversation threads to a csv file$T
+      client = FBScrape::Client.new(nil, options[:token], options[:page_id])
+      client.load_conversations(options[:limit])
+
+      client.conversations.each do |c|
+        c.load_messages
+        puts "Loading #{c.id} messages: #{c.messages.count}"
+      end
+
+      messages = client.conversations.collect{ |c| c.messages }.flatten
+      puts "Total messages #{messages.count}"
+
+    rescue ArgumentError => e
+      puts e.message
+    end
+  end
+
 end
 
 FBScrape::CLI.start(ARGV)
