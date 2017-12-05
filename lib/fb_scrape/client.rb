@@ -52,8 +52,8 @@ class FBScrape::Client
   end
 
   def load_conversations(limit=nil)
-    load_initial_conversations
     @limit = limit if limit != @limit
+    load_initial_conversations
 
     while has_more_conversations? && can_load_more_conversations? do
       load_more_conversations
@@ -65,6 +65,9 @@ class FBScrape::Client
     def load_initial_conversations
       if !@loaded_initial_conversations
         url = "https://graph.facebook.com/v#{FBScrape::GRAPH_VERSION}/#{@id}/conversations?access_token=#{@token_secret}"
+        if is_limited?
+          url += "&limit=#{@limit}"
+        end
         load_conversations_from_url url
         @loaded_initial_conversations = true
       end
