@@ -43,7 +43,7 @@ class FBScrape::Conversation
       case resp.code
         when 200
           response = JSON.parse(resp.body)
-          @messages = @messages.concat(response['messages']['data'].collect { |m| FBScrape::Message.new(m, @page_id) })
+          @messages = @messages.concat(response['messages']['data'].collect { |m| FBScrape::Message.new(m, @id, @page_id) })
           @page_info = response['messages']['paging']
         when 400
       end
